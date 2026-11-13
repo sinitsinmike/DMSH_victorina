@@ -1,0 +1,10 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {createRequire} from 'node:module';const require=createRequire(import.meta.url),{validate,safeAudio,assign,shuffle}=require('../js/data.js');
+const quiz=()=>({schemaVersion:1,id:'example',title:'Пример',tracks:[{id:'a',composer:'Композитор',work:'Произведение',audio:'MP3/Русское имя.mp3'}]});
+test('UTF-8 filenames and JSON round trip preserve data',()=>{const q=quiz();assert.deepEqual(validate(JSON.parse(JSON.stringify(q))),q);});
+test('unsafe audio paths and unsupported schema rejected',()=>{for(const p of ['../MP3/a.mp3','MP3/../a.mp3','MP3/a.mp3?x','https://x/a.mp3','mp3/a.mp3','MP3/%2e%2e/a.mp3','MP3/./a.mp3'])assert.equal(safeAudio(p),false,p);assert.throws(()=>validate({...quiz(),schemaVersion:2}));});
+test('duplicate track IDs rejected',()=>{const q=quiz();q.tracks.push(q.tracks[0]);assert.throws(()=>validate(q));});
+function state(mode,feedback='deferred'){return {mode,feedback,answers:{},locked:{},attempts:0,errors:0,finished:false};}
+test('wrong training assignment never consumes another answer',()=>{const s=state('training');assign(s,'a','b');assert.equal(s.answers.a,undefined);assign(s,'b','b');assign(s,'a','a');assert.deepEqual(s.answers,{a:'a',b:'b'});assert.equal(s.errors,1);assign(s,'b','a');assert.equal(s.answers.b,'b');});
+test('deferred test allows shared answer and independent correctness',()=>{const s=state('test');assign(s,'a','b');assign(s,'b','b');assert.equal(s.answers.a,'b');assert.equal(s.answers.b,'b');assert.equal(Object.keys(s.answers).filter(id=>s.answers[id]===id).length,1);s.finished=true;assign(s,'a','a');assert.equal(s.answers.a,'b');});
+test('immediate test replaces wrong answers without blocking them',()=>{const s=state('test','immediate');assign(s,'a','b');assign(s,'b','b');assign(s,'a','a');assert.deepEqual(s.answers,{a:'a',b:'b'});assert.equal(s.errors,1);});
+test('shuffle preserves identities without modifying source',()=>{const source=['a','b','c'];assert.deepEqual(shuffle(source).sort(),source);assert.deepEqual(source,['a','b','c']);});

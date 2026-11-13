@@ -1,0 +1,1 @@
+{"name":"dmsh-victorina","private":true,"scripts":{"build":"node scripts/build.mjs","test":"node --test tests/*.test.mjs","dev":"python3 -m http.server 4173"}}
