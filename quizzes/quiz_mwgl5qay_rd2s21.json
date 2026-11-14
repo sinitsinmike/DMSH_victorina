@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "quiz_mwgl5qay_rd2s21",
+  "title": "Слушание музыки",
+  "class": "3",
+  "description": "",
+  "tracks": [
+    {
+      "id": "track_mwgl62ya_t90bwd",
+      "composer": "И.С. Бах. Французская сюита до минор. Менуэт",
+      "work": "Французская сюита до минор. Менуэт",
+      "part": "",
+      "audio": "MP3/11-french-suite-no-2-in-c-minor-bwv-813-v-menuett.mp3"
+    }
+  ]
+}
